@@ -22,7 +22,7 @@ def get_source(dir):
 
 
 def build_model(source, state_size):
-    # Builds a Markvo Chain based on soruce and state_size.
+    # Builds a Markov Chain based on soruce and state_size.
     source = source.split()
     model = {}
     for i in range(state_size, len(source)):
