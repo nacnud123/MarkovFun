@@ -1,3 +1,4 @@
+# Duncan Armstrong - 11/9/24 - Markov Chain Script
 import os
 import random
 import tkinter as tk
@@ -11,7 +12,6 @@ def get_source(dir):
     # Finds all text located in the <src> directory
     text = ""
     files = [
-        # os.path.join to keep things cross-platform friendly
         os.path.join('src', dir, name) for name in os.listdir(os.path.join('src', dir))
     ]
     for name in files:
@@ -22,7 +22,7 @@ def get_source(dir):
 
 
 def build_model(source, state_size):
-    # Builds a Markvo Chain based on soruce and state_size.
+    # Builds a Markov Chain based on source and state_size.
     source = source.split()
     model = {}
     for i in range(state_size, len(source)):
@@ -37,7 +37,7 @@ def build_model(source, state_size):
 
 
 def generate_text(model, state_size, min_length, max_length=50):
-    # Generates text based on markov model.
+    # Generates text based on Markov model.
     # Generates text that is at least <min_length> long and no longer than <max_length>
     def get_new_starter():
         return random.choice([s.split(' ') for s in model.keys() if s[0].isupper()])
@@ -60,6 +60,7 @@ def generate_text(model, state_size, min_length, max_length=50):
     return ' '.join(text)
 
 
+# Update the image and the model based which model is active
 def update_image(template, source_dir):
     global image_label, img, draw, x_pos_entry, y_pos_entry, font_size_entry, scale_entry, wrap_entry, min_length, max_length
     try:
@@ -84,26 +85,19 @@ def update_image(template, source_dir):
     image_label.image = photo
     draw = ImageDraw.Draw(img)
 
-
+# Resets all values
 def resetValues():
     for entry in [x_pos_entry, y_pos_entry, font_size_entry, scale_entry, wrap_entry, min_length, max_length]:
         entry.delete(0, tk.END)
 
-def clear_image():
-    global image_label
-    blank_img = Image.new("RGB", (1, 1), (255, 255, 255))  # Create a blank white image
-    blank_photo = ImageTk.PhotoImage(blank_img)
-    image_label.config(image=blank_photo)
-    image_label.image = blank_photo
 
-
+# Change the image and model based on the button pressed.
 def change_image(which_image):
     global currentModel
-    clear_image()
     config = {
         1: ("jerma", "JermaTemplate.jpg", "Jerma", (337, 125, 10, 100, 20, 2, 5)),
         2: ("garf", "GarfTemplate.png", "Garfield", (370, 40, 10, 100, 20, 2, 5)),
-        3: ("funny", "Funny.png", "Funny", (10, 378, 20, 100, 50, 2, 5))
+        3: ("custom", "Custom.png", "Custom", (10, 378, 20, 100, 50, 2, 5))
     }
     if currentModel != config[which_image][0]:
         resetValues()
@@ -117,10 +111,11 @@ def change_image(which_image):
         currentModel = config[which_image][0]
     update_image(config[which_image][1], config[which_image][2])
 
-
+# Save the image to the output folder
 def save_image():
     img.save(f"output/{currentModel} Says_{random.randrange(1, 5000)}.png")
 
+# Load in default model and values
 currentModel = "jerma"
 root = tk.Tk()
 img = Image.open("JermaTemplate.jpg")
@@ -131,6 +126,7 @@ image_label.pack()
 frame1 = tk.Frame(root)
 frame1.pack()
 
+# UI
 tk.Label(frame1, text="X Position:").grid(row=0, column=0)
 x_pos_entry = tk.Entry(frame1)
 x_pos_entry.insert(0, "337")
@@ -181,7 +177,7 @@ change_to_garfield_button.grid(row=0, column=1, padx=5, pady=5)
 frame4 = tk.Frame(root)
 frame4.pack()
 
-change_to_funny_button = tk.Button(frame4, text="New Funny", command=lambda: change_image(3))
+change_to_funny_button = tk.Button(frame4, text="New Custom", command=lambda: change_image(3))
 change_to_funny_button.grid(row=0, column=0, padx=5, pady=5)
 
 save_button = tk.Button(frame4, text="Save Image", command=save_image)
